@@ -1,0 +1,7 @@
+
+aioconsole
+bleak
+tabulate
+tqdm
+types-tqdm
+types-tabulate
