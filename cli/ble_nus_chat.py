@@ -6,7 +6,7 @@ from aioconsole import ainput
 from bleak import BleakClient
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
-import nordic_uart_service as nus
+import cli.nordic_uart_service as nus
 
 
 class BleNusChat:
