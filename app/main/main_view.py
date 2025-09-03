@@ -12,6 +12,7 @@ class MainView(QMainWindow):
 
         menu_bar = QMenuBar()
         menu_bar.addMenu(file_menu)
+        self.setMenuBar(menu_bar)
 
         layout = QVBoxLayout()
         # Add content here
