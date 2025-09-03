@@ -12,20 +12,30 @@ ModelIndex = Union[QModelIndex, QPersistentModelIndex]
 class ScanTableAdapter(QAbstractTableModel):
     def __init__(self) -> None:
         super().__init__()
-        self.items: list[ScanItem] = []
+        self.items: dict[str, ScanItem] = {}
 
     def add_item(self, item: ScanItem) -> None:
         """
         Add an item to the end of the table.
         """
+        assert item.mac_addr not in self.items
         row = len(self.items)
 
         # This must be called before inserting data into the underlying data store
         self.beginInsertRows(QModelIndex(), row, row)
-        self.items.append(item)
+        self.items[item.mac_addr] = item
         self.endInsertRows()
 
         # Notify the view that the data has changed
+        top_left = self.index(row, 0)
+        bottom_right = self.index(row, len(ScanTableHeader) - 1)
+        self.dataChanged.emit(top_left, bottom_right)
+
+    def update_item(self, item: ScanItem) -> None:
+        assert item.mac_addr in self.items
+        self.items[item.mac_addr] = item
+
+        row = list(self.items.keys()).index(item.mac_addr)
         top_left = self.index(row, 0)
         bottom_right = self.index(row, len(ScanTableHeader) - 1)
         self.dataChanged.emit(top_left, bottom_right)
@@ -68,9 +78,11 @@ class ScanTableAdapter(QAbstractTableModel):
         # The EditRole is used to provide initial data when editing the item.
         if role in (Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.UserRole, Qt.ItemDataRole.EditRole):
             if col == ScanTableHeader.NAME:
-                return self.items[row].name
+                return list(self.items.values())[row].name
             if col == ScanTableHeader.MAC_ADDR:
-                return self.items[row].mac_addr
+                return list(self.items.values())[row].mac_addr
+            if col == ScanTableHeader.RSSI:
+                return list(self.items.values())[row].rssi
         return None
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.ItemDataRole.DisplayRole) -> Any:

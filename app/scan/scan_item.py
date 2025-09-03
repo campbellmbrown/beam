@@ -5,3 +5,4 @@ from dataclasses import dataclass
 class ScanItem:
     name: str
     mac_addr: str
+    rssi: int
