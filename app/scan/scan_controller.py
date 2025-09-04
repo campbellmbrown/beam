@@ -31,9 +31,17 @@ class ScanController:
         self.scan_model.start()
 
     def _on_device_discovered(self, device: QBluetoothDeviceInfo) -> None:
-        item = ScanItem(name=device.name(), mac_addr=device.address().toString(), rssi=device.rssi())
+        item = ScanItem(
+            name=device.name(),
+            mac_addr=device.address().toString(),
+            rssi=device.rssi(),
+        )
         self.table_adapter.add_item(item)
 
-    def _on_device_updated(self, device: QBluetoothDeviceInfo, updated_fields: QBluetoothDeviceInfo.Field) -> None:
-        item = ScanItem(name=device.name(), mac_addr=device.address().toString(), rssi=device.rssi())
+    def _on_device_updated(self, device: QBluetoothDeviceInfo, _updated_fields: QBluetoothDeviceInfo.Field) -> None:
+        item = ScanItem(
+            name=device.name(),
+            mac_addr=device.address().toString(),
+            rssi=device.rssi(),
+        )
         self.table_adapter.update_item(item)

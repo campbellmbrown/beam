@@ -1,7 +1,1 @@
-aioconsole
-bleak
 PySide6
-tabulate
-tqdm
-types-tabulate
-types-tqdm
