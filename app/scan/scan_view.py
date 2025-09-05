@@ -18,6 +18,6 @@ class ScanView(QWidget):
         table_view.setShowGrid(False)
         table_view.setSelectionMode(QTableView.SelectionMode.SingleSelection)
         table_view.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
-        table_view.setSortingEnabled(False)
+        table_view.setSortingEnabled(True)
         self.table_view = table_view
         self.scan_button = QPushButton("Scan")

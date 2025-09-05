@@ -1,4 +1,5 @@
 from PySide6.QtBluetooth import QBluetoothDeviceInfo
+from PySide6.QtCore import QSortFilterProxyModel, Qt
 from PySide6.QtWidgets import QHeaderView
 
 from app.scan.scan_item import ScanItem
@@ -18,7 +19,11 @@ class ScanController:
         # Adapter to handle data for the table view
         self.table_adapter = ScanTableAdapter()
 
-        view.table_view.setModel(self.table_adapter)
+        proxy = QSortFilterProxyModel()
+        proxy.setSourceModel(self.table_adapter)
+        proxy.setSortCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+
+        view.table_view.setModel(proxy)
         header = view.table_view.horizontalHeader()
         assert isinstance(header, QHeaderView)
         header.setSectionResizeMode(ScanTableHeader.NAME, QHeaderView.ResizeMode.Stretch)
