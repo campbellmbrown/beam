@@ -9,12 +9,11 @@ from app.scan.scan_view import ScanView
 
 
 class ScanController:
-    def __init__(self, view: ScanView) -> None:
+    def __init__(self, view: ScanView, model: ScanModel) -> None:
         view.scan_button.clicked.connect(self._on_scan)
-        # TODO: pass this in as a dependency
-        self.scan_model = ScanModel()
-        self.scan_model.device_discovered.connect(self._on_device_discovered)
-        self.scan_model.device_updated.connect(self._on_device_updated)
+        self.model = model
+        self.model.device_discovered.connect(self._on_device_discovered)
+        self.model.device_updated.connect(self._on_device_updated)
 
         # Adapter to handle data for the table view
         self.table_adapter = ScanTableAdapter()
@@ -28,7 +27,7 @@ class ScanController:
 
     def _on_scan(self) -> None:
         self.table_adapter.clear()
-        self.scan_model.start()
+        self.model.start()
 
     def _on_device_discovered(self, device: QBluetoothDeviceInfo) -> None:
         item = ScanItem(

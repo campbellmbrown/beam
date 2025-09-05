@@ -24,12 +24,10 @@ class ScanModel(QObject):
         self.agent.start(QBluetoothDeviceDiscoveryAgent.DiscoveryMethod.LowEnergyMethod)
 
     def _on_device_discovered(self, device: QBluetoothDeviceInfo) -> None:
-        print(f"Discovered device: {device.name()} ({device.address().toString()})")
         assert device.coreConfigurations() & QBluetoothDeviceInfo.CoreConfiguration.LowEnergyCoreConfiguration
         self.device_discovered.emit(device)
 
     def _on_device_updated(self, device: QBluetoothDeviceInfo, updated_fields: QBluetoothDeviceInfo.Field) -> None:
-        print(f"Updated device: {device.address().toString()}: {updated_fields}")
         self.device_updated.emit(device, updated_fields)
 
     def _on_scan_error(self, error: QBluetoothDeviceDiscoveryAgent.Error) -> None:
