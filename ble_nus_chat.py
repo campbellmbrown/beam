@@ -1,12 +1,14 @@
 import argparse
 import asyncio
 import time
+from pathlib import Path
 
 from aioconsole import ainput
 from bleak import BleakClient
 from bleak.backends.characteristic import BleakGATTCharacteristic
 
 import nordic_uart_service as nus
+from device_registry import DeviceRegistry
 
 
 class BleNusChat:
@@ -66,14 +68,24 @@ class BleNusChat:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Chat with a BLE device using the Nordic UART Service (NUS).")
-    parser.add_argument("address", help="The MAC address of the peripheral device.")
+    parser.add_argument("target", help="MAC address or device ID")
     parser.add_argument(
         "-n", "--newline", action="store_true", help="Append a newline character to each message sent to the device."
     )
     args = parser.parse_args()
 
+    registry = DeviceRegistry(Path("registry.yaml"))
+    address_from_id = registry.get_address(args.target)
+    if address_from_id is not None:
+        print(f"Resolved device ID '{args.target}' to address '{address_from_id}'.")
+        address = address_from_id
+    else:
+        # Use the provided target as the address
+        print(f"Using provided target '{args.target}' as address.")
+        address = args.target
+
     ble_nus_chat = BleNusChat(append_newline=args.newline)
     try:
-        asyncio.run(ble_nus_chat.run(args.address))
+        asyncio.run(ble_nus_chat.run(address))
     except KeyboardInterrupt:
         print("Exiting...")

@@ -1,7 +1,5 @@
-
 aioconsole
 bleak
+PyYAML
 tabulate
 tqdm
-types-tqdm
-types-tabulate

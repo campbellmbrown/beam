@@ -4,7 +4,7 @@ import time
 
 from bleak import BleakClient
 
-NEGOTATION_DELAY_S = 2.0
+NEGOTIATION_DELAY_S = 2.0
 
 
 async def run(address: str) -> None:
@@ -29,7 +29,7 @@ async def run(address: str) -> None:
                     )
 
         print("Waiting for MTU negotiation to complete...")
-        await asyncio.sleep(NEGOTATION_DELAY_S)  # Small delay for negotiation
+        await asyncio.sleep(NEGOTIATION_DELAY_S)  # Small delay for negotiation
         print("MTU:", client.mtu_size)
 
         print("Disconnecting...")
