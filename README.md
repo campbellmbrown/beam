@@ -1,6 +1,11 @@
-# BEAM
+# BEAM - BLE Easy-Access Manager
 
-BEAM - BLE Easy-Access Manager
+![License](https://img.shields.io/github/license/campbellmbrown/beam)
+![Release](https://img.shields.io/github/v/release/campbellmbrown/beam)
+![Contributors](https://img.shields.io/github/contributors/campbellmbrown/beam)
+![Issues](https://img.shields.io/github/issues/campbellmbrown/beam)
+![Pull Requests](https://img.shields.io/github/issues-pr/campbellmbrown/beam)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Usage
 
