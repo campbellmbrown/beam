@@ -5,14 +5,12 @@ import yaml
 
 class DeviceRegistry:
     def __init__(self, yaml_file: Path | None) -> None:
-        self.yaml_file = yaml_file
         self.devices: list[dict[str, str]] = []
-        if self.yaml_file and self.yaml_file.exists():
-            with open(self.yaml_file, encoding="utf-8") as file:
+        if yaml_file and yaml_file.exists():
+            self.registry_exists = True
+            with open(yaml_file, encoding="utf-8") as file:
                 loaded_registry = yaml.safe_load(file)
                 self.devices = loaded_registry.get("devices", [])
-
-        print(self.devices)
 
     def get_address(self, device_id: str) -> str | None:
         for device in self.devices:

@@ -6,6 +6,7 @@ from pathlib import Path
 from aioconsole import ainput
 from bleak import BleakClient
 from bleak.backends.characteristic import BleakGATTCharacteristic
+from bleak.exc import BleakDeviceNotFoundError
 
 import nordic_uart_service as nus
 from device_registry import DeviceRegistry
@@ -78,13 +79,17 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     registry = DeviceRegistry(Path("registry.yaml"))
-    address_from_id = registry.get_address(args.target)
-    if address_from_id is not None:
-        print(f"Resolved device ID '{args.target}' to address '{address_from_id}'.")
-        address = address_from_id
+    if registry.registry_exists:
+        address_from_id = registry.get_address(args.target)
+        if address_from_id is not None:
+            print(f"Resolved device ID '{args.target}' to address '{address_from_id}'.")
+            address = address_from_id
+        else:
+            # Use the provided target as the address
+            print(f"Device ID '{args.target}' not found in registry. Using provided target '{args.target}' as address.")
+            address = args.target
     else:
-        # Use the provided target as the address
-        print(f"Using provided target '{args.target}' as address.")
+        print(f"Device registry not found. Using provided target '{args.target}' as address.")
         address = args.target
 
     ble_nus_chat = BleNusChat(append_newline=args.newline, print_hex=args.print_hex)
@@ -92,3 +97,5 @@ if __name__ == "__main__":
         asyncio.run(ble_nus_chat.run(address))
     except KeyboardInterrupt:
         print("Exiting...")
+    except BleakDeviceNotFoundError:
+        print(f"Device with address '{address}' not found.")
