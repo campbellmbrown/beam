@@ -12,8 +12,9 @@ from device_registry import DeviceRegistry
 
 
 class BleNusChat:
-    def __init__(self, append_newline: bool = False) -> None:
+    def __init__(self, append_newline: bool, print_hex: bool) -> None:
         self.append_newline = append_newline
+        self.print_hex = print_hex
         self.client: BleakClient | None = None
         self.rx_characteristic: BleakGATTCharacteristic | None = None
 
@@ -63,7 +64,8 @@ class BleNusChat:
 
     def _notification_handler(self, _sender: BleakGATTCharacteristic, data: bytearray) -> None:
         print(data.decode(), end="")
-        print(data.hex())
+        if self.print_hex:
+            print(data.hex())
 
 
 if __name__ == "__main__":
@@ -72,6 +74,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-n", "--newline", action="store_true", help="Append a newline character to each message sent to the device."
     )
+    parser.add_argument("--print-hex", action="store_true", help="Display received data in hexadecimal format.")
     args = parser.parse_args()
 
     registry = DeviceRegistry(Path("registry.yaml"))
@@ -84,7 +87,7 @@ if __name__ == "__main__":
         print(f"Using provided target '{args.target}' as address.")
         address = args.target
 
-    ble_nus_chat = BleNusChat(append_newline=args.newline)
+    ble_nus_chat = BleNusChat(append_newline=args.newline, print_hex=args.print_hex)
     try:
         asyncio.run(ble_nus_chat.run(address))
     except KeyboardInterrupt:
