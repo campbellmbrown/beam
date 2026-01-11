@@ -1,15 +1,15 @@
 import argparse
 import asyncio
+import logging
 import time
-from pathlib import Path
 
-from aioconsole import ainput
+from aioconsole import ainput  # type: ignore
 from bleak import BleakClient
 from bleak.backends.characteristic import BleakGATTCharacteristic
 from bleak.exc import BleakDeviceNotFoundError
 
 import core.nordic_uart_service as nus
-from core.device_registry import DeviceRegistry
+from core.device_registry import resolve_address
 
 
 class BleNusChat:
@@ -20,24 +20,24 @@ class BleNusChat:
         self.rx_characteristic: BleakGATTCharacteristic | None = None
 
     async def run(self, address: str) -> None:
-        print(f"Connecting to {address}...")
+        logging.info("Connecting to %s...", address)
         start_time = time.time()
         async with BleakClient(address) as client:
             self.client = client
             if not client.is_connected:
-                print("Failed to connect.")
+                logging.warning("Failed to connect.")
                 return
-            print(f"Connected successfully in {time.time() - start_time:.2f} seconds.")
+            logging.info("Connected successfully in %.2f seconds.", time.time() - start_time)
 
             nus_service = client.services.get_service(nus.SERVICE_UUID)
             if nus_service is None:
-                print("Nordic UART Service not found.")
+                logging.warning("Nordic UART Service not found.")
                 return
 
             rx_characteristic = nus_service.get_characteristic(nus.RX_CHARACTERISTIC_UUID)
             tx_characteristic = nus_service.get_characteristic(nus.TX_CHARACTERISTIC_UUID)
             if rx_characteristic is None or tx_characteristic is None:
-                print("Nordic UART characteristics not found.")
+                logging.warning("Nordic UART characteristics not found.")
                 return
             self.rx_characteristic = rx_characteristic
 
@@ -78,24 +78,14 @@ if __name__ == "__main__":
     parser.add_argument("--print-hex", action="store_true", help="Display received data in hexadecimal format.")
     args = parser.parse_args()
 
-    registry = DeviceRegistry(Path("registry.yaml"))
-    if registry.registry_exists:
-        address_from_id = registry.get_address(args.target)
-        if address_from_id is not None:
-            print(f"Resolved device ID '{args.target}' to address '{address_from_id}'.")
-            address = address_from_id
-        else:
-            # Use the provided target as the address
-            print(f"Device ID '{args.target}' not found in registry. Using provided target '{args.target}' as address.")
-            address = args.target
-    else:
-        print(f"Device registry not found. Using provided target '{args.target}' as address.")
-        address = args.target
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+
+    address = resolve_address(args.target)
 
     ble_nus_chat = BleNusChat(append_newline=args.newline, print_hex=args.print_hex)
     try:
         asyncio.run(ble_nus_chat.run(address))
     except KeyboardInterrupt:
-        print("Exiting...")
+        logging.info("Exiting...")
     except BleakDeviceNotFoundError:
-        print(f"Device with address '{address}' not found.")
+        logging.warning("Device with address '%s' not found.", address)

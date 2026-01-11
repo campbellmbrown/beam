@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import logging
 
 from bleak import BleakScanner
 from bleak.backends.device import BLEDevice
@@ -71,5 +72,8 @@ if __name__ == "__main__":
     )
     parser.add_argument("-i", "--ignore-no-name", action="store_true", help="Ignore devices without a name.")
     args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+
     ble_scanner = BleScanner(args.duration, args.ignore_no_name)
     asyncio.run(ble_scanner.run())

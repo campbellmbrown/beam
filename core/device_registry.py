@@ -1,6 +1,9 @@
+import logging
 from pathlib import Path
 
 import yaml
+
+DEFAULT_REGISTRY = Path("registry.yaml")
 
 
 class DeviceRegistry:
@@ -19,3 +22,21 @@ class DeviceRegistry:
                 if address:
                     return address
         return None
+
+
+def resolve_address(target: str) -> str:
+    registry = DeviceRegistry(DEFAULT_REGISTRY)
+    if registry.registry_exists:
+        address_from_id = registry.get_address(target)
+        if address_from_id is not None:
+            logging.info("Resolved device ID '%s' to address '%s'.", target, address_from_id)
+            address = address_from_id
+        else:
+            # Use the provided target as the address
+            logging.info("Device ID '%s' not found in registry. Using provided target '%s' as address.", target, target)
+            address = target
+    else:
+        logging.info("Device registry not found. Using provided target '%s' as address.", target)
+        address = target
+
+    return address
