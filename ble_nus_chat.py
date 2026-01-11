@@ -8,8 +8,8 @@ from bleak import BleakClient
 from bleak.backends.characteristic import BleakGATTCharacteristic
 from bleak.exc import BleakDeviceNotFoundError
 
-import nordic_uart_service as nus
-from device_registry import DeviceRegistry
+import core.nordic_uart_service as nus
+from core.device_registry import DeviceRegistry
 
 
 class BleNusChat:
