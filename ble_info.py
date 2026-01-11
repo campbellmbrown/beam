@@ -5,6 +5,8 @@ import time
 
 from bleak import BleakClient
 
+from core.device_registry import resolve_address
+
 NEGOTIATION_DELAY_S = 2.0
 
 
@@ -42,9 +44,11 @@ async def run(address: str) -> None:
 
 
 parser = argparse.ArgumentParser(description="Connect and probe a BLE peripheral device for information.")
-parser.add_argument("address", help="The MAC address of the peripheral device.")
+parser.add_argument("target", help="MAC address or device ID")
 args = parser.parse_args()
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
-asyncio.run(run(args.address))
+address = resolve_address(args.target)
+
+asyncio.run(run(address))
